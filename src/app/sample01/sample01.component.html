@@ -1,3 +1,17 @@
-<p>sample01 works! {{ (progress$ | async) }} </p>
-<mat-progress-bar mode="determinate" value="{{ (progress$ | async) }}"></mat-progress-bar>
-{{ (words$ | async) | titlecase }}
+<section class="sample-01">
+    <h1>PRESS ANY BUTTON TO POWERUP</h1>
+    <div class="sample-01__film">
+        <div class="sample-01__film-normal" *ngIf="(isNormal$ | async)"></div>
+        <div class="sample-01__film-normal-standing" *ngIf="(isNormalStanding$ | async)"></div>
+        <div class="sample-01__film-ssj" *ngIf="(isSsj$ | async)"></div>
+        <div class="sample-01__film-ssj-standing" *ngIf="(isSsjStanding$ | async)"></div>
+    </div>
+    
+    <div class="sample-01__progress">
+        <p>{{ (progress$ | async) + '%' }} </p>
+        <span class="sample-01__progress-indicator" *ngIf="(increasing$ | async)">Energy Increasing !</span>
+        <span class="sample-01__progress-indicator" *ngIf="!(increasing$ | async) && (progress$ | async)">Loosing Energy!</span>
+        <mat-progress-bar mode="determinate" value="{{ (progress$ | async) }}"></mat-progress-bar>
+        <p>{{ 'Level: ' + (words$ | async) | titlecase }} </p> <br />
+    </div>
+</section>

@@ -1,0 +1,94 @@
+.sample-01{
+  padding: 100px;
+  position: relative;
+
+    @keyframes intermittent {  
+      0% { opacity: 1.0; }
+      50% { opacity: 0.0; }
+      100% { opacity: 1.0; }
+    }
+
+    @keyframes powerup {
+        from {
+          background-position: 0px;
+        }
+        to {
+          background-position: -513px;
+        }
+    }
+
+    @keyframes stand {
+        from {
+          background-position: 0px;
+        }
+        to {
+          background-position: -255px;
+        }
+    }
+
+    h1 {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background-color: yellow;
+      padding: 20px;
+      border: 1px solid;
+    }
+
+    &__progress {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-direction: column-reverse;
+
+      p {
+        font-size: 30px;
+      }
+
+      &-indicator {
+        animation-name: intermittent;
+        animation-duration: 1s;
+        animation-timing-function: linear;
+        animation-iteration-count: infinite;
+        font-size: 40px;
+      }
+    }
+
+    &__film {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+
+        &-normal {
+            width: 250px; 
+            height: 288px;
+            background-image: url("../../assets/img/goku-powerup-sheet.png");
+            animation: powerup 0.3s steps(2) infinite;
+            background-repeat: no-repeat;
+        }
+
+        &-normal-standing {
+            width: 120px; 
+            height: 250px;
+            background-image: url("../../assets/img/goku-standing-sheet.png");
+            animation: stand 0.3s steps(2) infinite;
+            background-repeat: no-repeat;
+        }
+
+        &-ssj {
+            width: 250px; 
+            height: 288px;
+            background-image: url("../../assets/img/goku-ssj-powerup-sheet.png");
+            animation: powerup 0.3s steps(2) infinite;
+            background-repeat: no-repeat;
+        }
+
+        &-ssj-standing {
+            width: 120px; 
+            height: 250px;
+            background-image: url("../../assets/img/goku-ssj-standing-sheet.png");
+            animation: stand 0.3s steps(2) infinite;
+            background-repeat: no-repeat;
+        }
+    }
+}
