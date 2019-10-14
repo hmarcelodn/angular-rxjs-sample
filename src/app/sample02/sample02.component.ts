@@ -1,28 +1,113 @@
-import { Component, OnInit } from '@angular/core';
-import { Observable } from 'rxjs';
-import { sample } from 'rxjs/operators';
+import { Component, OnInit, OnDestroy } from '@angular/core';
+import { Observable, Subject, BehaviorSubject, ReplaySubject } from 'rxjs';
+import { takeUntil } from 'rxjs/operators';
+import * as chalk from 'chalk';
 
 @Component({
   selector: 'app-sample02',
   templateUrl: './sample02.component.html',
   styleUrls: ['./sample02.component.scss']
 })
-export class Sample02Component implements OnInit {
+export class Sample02Component implements OnInit, OnDestroy {
+
+  componentDestroyed$ = new Subject();
 
   constructor() { }
 
-  sample02$: Observable<number>;
-
   ngOnInit() {
-    this.sample02$ = new Observable((observer) => {
-      observer.next(1);
-      observer.next(2);
-      observer.next(3);
-      observer.next(4);
-      observer.complete();
+
+  }
+
+  ngOnDestroy(): void {
+    this.componentDestroyed$.next();
+    this.componentDestroyed$.complete();
+  }
+
+  //
+  // Observables
+  //
+  onSample01(): void {
+    // Observer
+    const sampleObservable = new Observable(sampleObserver => {
+      sampleObserver.next(1);
+      sampleObserver.next(2);
+      sampleObserver.next(3);
+
+      setTimeout(() => {
+        sampleObserver.next(4);
+        sampleObserver.complete();
+      }, 3000);
     });
 
-    this.sample02$.subscribe((data) => console.log('Observer: ', data));
+    console.log('Before Subscribe...');
+
+    // Subcriber
+    sampleObservable.pipe(takeUntil(this.componentDestroyed$)).subscribe(
+      (data) => console.log('New Stream: ', data),
+      (error) => console.log('Error'),
+      () => console.log('Completed')
+    );
+
+    console.log('After Subscribe...');
+  }
+
+  //
+  // Subjects / Multicast
+  //
+  onSample02(): void {
+    const sampleSubject = new Subject();
+
+    sampleSubject.pipe(takeUntil(this.componentDestroyed$)).subscribe({
+      next: (data) => console.log('Observer A: ', data)
+    });
+
+    sampleSubject.pipe(takeUntil(this.componentDestroyed$)).subscribe({
+      next: (data) => console.log('Observer B: ', data)
+    });
+
+    sampleSubject.next(1);
+    sampleSubject.next(2);
+  }
+
+  //
+  // Behavior Subject & Current Value Streamming
+  //
+  onSample03(): void {
+    const sampleSubject = new BehaviorSubject(0);
+
+    sampleSubject.pipe(takeUntil(this.componentDestroyed$)).subscribe(
+      (data) => console.log('ObservableA: ', data)
+    );
+
+    sampleSubject.next(1);
+    sampleSubject.next(2);
+
+    sampleSubject.pipe(takeUntil(this.componentDestroyed$)).subscribe(
+      (data) => console.log('ObservableB: ', data)
+    );
+
+    sampleSubject.next(3);
+  }
+
+  //
+  // Replay Subject
+  //
+  onSample04(): void {
+    const sampleReplay = new ReplaySubject();
+
+    sampleReplay.pipe(takeUntil(this.componentDestroyed$)).subscribe(data => {
+      console.log('ObserverA:', data);
+    });
+
+    sampleReplay.next(1);
+    sampleReplay.next(2);
+    sampleReplay.next(3);
+
+    sampleReplay.pipe(takeUntil(this.componentDestroyed$)).subscribe(data => {
+      console.log('ObserverB:', data);
+    });
+
+    sampleReplay.next(4);
   }
 
 }

@@ -1,6 +1,6 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
-import { Observable, BehaviorSubject, Subject, interval, of, fromEvent } from 'rxjs';
-import { scan, takeUntil, tap, withLatestFrom, map, takeWhile } from 'rxjs/operators';
+import { Observable, BehaviorSubject, Subject, interval, fromEvent } from 'rxjs';
+import { takeUntil } from 'rxjs/operators';
 import * as converter from 'number-to-words';
 
 @Component({
@@ -19,11 +19,13 @@ export class Sample01Component implements OnInit, OnDestroy {
   progress$ = new BehaviorSubject<number>(0);
   componentDestroyed$ = new Subject();
   increasing$ = new Subject();
+  itsOver$ = new Subject<boolean>();
 
   constructor() { }
 
   ngOnInit() {
 
+    // Events Streams
     const begin = fromEvent(document, 'keydown');
     const end = fromEvent(document, 'keyup');
 
@@ -31,6 +33,7 @@ export class Sample01Component implements OnInit, OnDestroy {
     this.words$.next('');
     this.increasing$.next(false);
 
+    // Observer A
     begin.pipe(takeUntil(this.componentDestroyed$)).subscribe(() => {
       this.increasing$.next(true);
       if (this.progress$.getValue()  <= 98) {
@@ -38,6 +41,7 @@ export class Sample01Component implements OnInit, OnDestroy {
       }
     });
 
+    // Observer B
     end.pipe(takeUntil(this.componentDestroyed$)).subscribe(() => {
       this.increasing$.next(false);
       this.interval$ = interval(100);
@@ -48,6 +52,7 @@ export class Sample01Component implements OnInit, OnDestroy {
       });
     });
 
+    // Observer 3
     this.progress$.pipe(takeUntil(this.componentDestroyed$)).subscribe(
       (progress: number) => {
         console.log({ level: progress });
@@ -57,21 +62,25 @@ export class Sample01Component implements OnInit, OnDestroy {
           this.isNormal$.next(false);
           this.isSsj$ .next(false);
           this.isSsjStanding$.next(false);
+          this.itsOver$.next(false);
         } else if (progress > 20 && progress < 60) {
           this.isNormalStanding$.next(false);
           this.isNormal$.next(true);
           this.isSsj$ .next(false);
           this.isSsjStanding$.next(false);
+          this.itsOver$.next(false);
         } else if (progress > 60 && progress < 90) {
           this.isNormalStanding$.next(false);
           this.isNormal$.next(false);
           this.isSsj$ .next(true);
           this.isSsjStanding$.next(false);
+          this.itsOver$.next(false);
         } else if(progress > 90) {
           this.isNormalStanding$.next(false);
           this.isNormal$.next(false);
           this.isSsj$ .next(false);
           this.isSsjStanding$.next(true);
+          this.itsOver$.next(true);
         }
       },
       (error: any) => console.log('Handling Error'),
