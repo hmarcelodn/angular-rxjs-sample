@@ -15,7 +15,6 @@ export class Sample02Component implements OnInit, OnDestroy {
   constructor() { }
 
   ngOnInit() {
-
   }
 
   ngOnDestroy(): void {
